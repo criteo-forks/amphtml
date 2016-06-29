@@ -344,6 +344,7 @@ function buildExamples(watch) {
 
   // Also update test-example-validation.js
   buildExample('ads.amp.html');
+  buildExample('criteo.rta.html');
   buildExample('ads.with.script.amp.html');
   buildExample('alp.amp.html');
   buildExample('analytics-notification.amp.html');

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {loadScript} from '../3p/3p';
+import {computeInMasterFrame, loadScript} from '../3p/3p';
 
 /* global Criteo: false */
 
@@ -25,5 +25,26 @@ import {loadScript} from '../3p/3p';
 export function criteo(global, data) {
   loadScript(global, 'https://static.criteo.net/js/ld/publishertag.js', () => {
     Criteo.DisplayAd({'zoneid': data.zone, 'async': true, 'containerid': 'c'});
+
+    if (data.id) {
+        Criteo.Log.Debug('DisplayAd. id - ' + data.id);
+    }
+
+    if (data.networkid) {
+        computeInMasterFrame(window, 'call-rta', resultCallback => {
+            params = { 'networkid': data.networkid };
+            if (data.varname) {
+                params['varname'] = data.varname;
+            }
+            if (data.cookiename) {
+                params['cookiename'] = data.cookiename;
+            }
+            Criteo.Log.Debug('RTA called. id - ' + data.id);
+            Criteo.CallRTA(params);
+            resultCallback(null);
+        }, result => {
+
+        });
+    }
   });
 }

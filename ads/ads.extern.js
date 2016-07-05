@@ -34,6 +34,8 @@ data.clmb_divid;
 data.clmb_section
 var Criteo;
 Criteo.DisplayAd;
+Criteo.Log.Debug;
+Criteo.CallRTA;
 data.epl_si;
 data.epl_isv;
 data.epl_sv;

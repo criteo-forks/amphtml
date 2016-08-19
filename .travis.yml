@@ -25,9 +25,9 @@ before_script:
   - npm install -g gulp
   - pip install --user protobuf
 script:
-  - npm run node-test
+  - npm run ava
   - gulp lint
-  - gulp build --fortesting
+  - gulp build --fortesting --css-only
   - gulp check-types
   - gulp dist --fortesting
   - gulp presubmit
@@ -52,3 +52,7 @@ branches:
 env:
   global:
     - NPM_CONFIG_PROGRESS="false"
+
+cache:
+  directories:
+  - node_modules

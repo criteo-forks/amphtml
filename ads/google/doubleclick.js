@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {loadScript, checkData} from '../../3p/3p';
-import {getCorrelator} from './utils';
+import {makeCorrelator} from './correlator';
+import {checkData, loadScript} from '../../3p/3p';
 
 /**
  * @enum {number}
@@ -24,7 +24,8 @@ import {getCorrelator} from './utils';
 const GladeExperiment = {
   NO_EXPERIMENT: 0,
   GLADE_CONTROL: 1,
-  GLADE_OPT_OUT: 2,
+  GLADE_EXPERIMENT: 2,
+  GLADE_OPT_OUT: 3,
 };
 
 /**
@@ -32,7 +33,7 @@ const GladeExperiment = {
  * @param {!Object} data
  */
 export function doubleclick(global, data) {
-  const experimentFraction = 0.5;
+  const experimentFraction = 0.1;
 
   checkData(data, [
     'slot', 'targeting', 'categoryExclusions',
@@ -54,13 +55,13 @@ export function doubleclick(global, data) {
   } else {
     const dice = Math.random();
     const href = global.context.location.href;
-    if ((href.indexOf('google_glade=1') > 0 || dice < experimentFraction)
-        && href.indexOf('google_glade=0') < 0) {
-      doubleClickWithGlade(global, data);
+    if ((href.indexOf('google_glade=0') > 0 || dice < experimentFraction)
+        && href.indexOf('google_glade=1') < 0) {
+      doubleClickWithGpt(global, data, GladeExperiment.GLADE_CONTROL);
     } else {
       const exp = (dice < 2 * experimentFraction) ?
-        GladeExperiment.GLADE_CONTROL : GladeExperiment.NO_EXPERIMENT;
-      doubleClickWithGpt(global, data, exp);
+        GladeExperiment.GLADE_EXPERIMENT : GladeExperiment.NO_EXPERIMENT;
+      doubleClickWithGlade(global, data, exp);
     }
   }
 }
@@ -96,8 +97,8 @@ function doubleClickWithGpt(global, data, gladeExperiment) {
 
       if (data.categoryExclusions) {
         if (Array.isArray(data.categoryExclusions)) {
-          for (const categoryExclusion of data.categoryExclusions) {
-            slot.setCategoryExclusion(categoryExclusion);
+          for (let i = 0; i < data.categoryExclusions.length; i++) {
+            slot.setCategoryExclusion(data.categoryExclusions[i]);
           }
         } else {
           slot.setCategoryExclusion(data.categoryExclusions);
@@ -121,6 +122,7 @@ function doubleClickWithGpt(global, data, gladeExperiment) {
 
       pubads.addEventListener('slotRenderEnded', event => {
         let creativeId = event.creativeId || '_backfill_';
+        global.context.renderStart();
         if (event.isEmpty) {
           global.context.noContentAvailable();
           creativeId = '_empty_';
@@ -138,8 +140,9 @@ function doubleClickWithGpt(global, data, gladeExperiment) {
 /**
  * @param {!Window} global
  * @param {!Object} data
+ * @param {!GladeExperiment} gladeExperiment
  */
-function doubleClickWithGlade(global, data) {
+function doubleClickWithGlade(global, data, gladeExperiment) {
   const requestHeight = parseInt(data.overrideHeight || data.height, 10);
   const requestWidth = parseInt(data.overrideWidth || data.width, 10);
 
@@ -156,6 +159,9 @@ function doubleClickWithGlade(global, data) {
   }
   if (data.targeting) {
     jsonParameters.targeting = data.targeting;
+  }
+  if (gladeExperiment === GladeExperiment.GLADE_EXPERIMENT) {
+    jsonParameters.gladeExp = '1';
   }
 
   const slot = global.document.querySelector('#c');
@@ -178,6 +184,7 @@ function doubleClickWithGlade(global, data) {
   slot.setAttribute('data-request-width', requestWidth);
 
   slot.addEventListener('gladeAdFetched', event => {
+    global.context.renderStart();
     if (event.detail.empty) {
       global.context.noContentAvailable();
     }
@@ -185,4 +192,12 @@ function doubleClickWithGlade(global, data) {
 
   window.glade = {correlator: getCorrelator(global)};
   loadScript(global, 'https://securepubads.g.doubleclick.net/static/glade.js');
+}
+
+/**
+ * @param {!Window} global
+ * @return {number}
+ */
+function getCorrelator(global) {
+  return makeCorrelator(global.context.clientId, global.context.pageViewId);
 }

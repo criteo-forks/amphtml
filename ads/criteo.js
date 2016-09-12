@@ -19,54 +19,6 @@ import {doubleclick} from '../ads/google/doubleclick';
 
 /* global Criteo: false */
 
-// This code comes from PublisherTag, it was just translated from Typescript to 
-// Javascript In the future, some refactoring will be necessary to avoid code 
-// duplication
-function readCookie(cookieName) {
-    var cookies = document.cookie.split(";");
-
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var currentCookieName = cookie.substr(0, cookie.indexOf("="));
-        var currentCookieValue = cookie.substr(cookie.indexOf("=") + 1);
-        currentCookieName = currentCookieName.replace(/^\s+|\s+$/g, "");
-        if(currentCookieName === cookieName) {
-            return decodeURIComponent(currentCookieValue);
-        }
-    }
-    return "";
-}
-
-function extractKeyValuesFromCrtgContent(crtgContentName) {
-
-    if (window[crtgContentName] === undefined || window[crtgContentName] === "")
-        return {};
-
-    var labels = window[crtgContentName].split(";");
-
-    var keyValues = {};
-    for (var i = 0; i < labels.length; i++) {
-        if (labels[i] === "")
-            continue;
-
-        var tmp = labels[i].split('=');
-        if (tmp.length !== 2)
-            continue;
-
-        var key = tmp[0];
-        var value = tmp[1];
-
-        keyValues[key] = value; // TODO PublisherTag supports more than one value by key,
-                                // but DFP only accepts one value by key.
-    }
-
-    return keyValues;
-}
-
-function computeDFPTargetingParameter() {
-    return extractKeyValuesFromCrtgContent('crtg_content');
-}
-
 /**
  * @param {!Window} global
  * @param {!Object} data
@@ -88,14 +40,10 @@ export function criteo(global, data) {
             Criteo.Log.Debug('RTA called.');
             resultCallback(null);
         }, result => {
-            // This function will be called on all ads, first we make sure that we have the cookie set 
-            // so that it can be fetched by the code in readCookie that comes from PublisherTag
-            window[data.varname] = readCookie(data.cookiename);
-            Criteo.Log.Debug('RTA Call finished... time to call DFP');
-
+            Criteo.Log.Debug('Computing targeting');
             if (data.adserver === "DFP") {
                 var dbl_params = { 'slot' : data.slot,
-                                   'targeting' : computeDFPTargetingParameter(),
+                                   'targeting' : Criteo.ComputeDFPTargeting(data.cookiename),
                                    'width' : data.width,
                                     'height': data.height,
                                    'type' : 'criteo'

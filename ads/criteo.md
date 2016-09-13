@@ -32,8 +32,14 @@ The ad size is based on the setup of your Criteo zone. The `width` and `height` 
 
 ## Configuration
 
-For configuration details and to generate your tags, please refer to [your publisher account](https://publishers.criteo.com) or contact publishers@criteo.com.
-
 Supported parameters:
 
-- `data-zone`: your Criteo zone identifier.
+- `data-zone`: your Criteo zone identifier. Obligatory.
+- `data-adserver`: the name of your adserver. Optional.
+- `data-slot`: DFP slot. Optional. Taken into account only for DPF.
+- `data-networkid`: your Criteo network id. Optional. Taken into account only for DPF.
+- `data-varname`: `crtg_content` variable name. Optional. Ignored if no `adserver`.
+- `data-cookiename`: `crtg_rta` cookie name. Optional. Ignored if no `adserver`.
+
+For configuration details and to generate your tags, please refer to [your publisher account](https://publishers.criteo.com) or contact publishers@criteo.com.
+

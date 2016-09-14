@@ -410,8 +410,8 @@ export function validateAllowedTypes(window, type, allowedTypes) {
   if (defaultAllowedTypesInCustomFrame.indexOf(type) != -1) {
     return;
   }
-  user.assert(allowedTypes && allowedTypes.indexOf(type) != -1,
-      'Non-whitelisted 3p type for custom iframe: ' + type);
+  // DEMO user.assert(allowedTypes && allowedTypes.indexOf(type) != -1,
+      //'Non-whitelisted 3p type for custom iframe: ' + type);
 }
 
 /**

@@ -207,14 +207,17 @@ function getDefaultBootstrapBaseUrl(parentWindow) {
       return overrideBootstrapBaseUrl;
     }
     const prefix = getMode().test ? '/base' : '';
-    return 'http://ads.localhost:' +
+    /* DEMO return 'http://ads.localhost:' +
         (parentWindow.location.port || parentWindow.parent.location.port) +
         prefix + '/dist.3p/current' +
         (getMode().minified ? '-min/frame' : '/frame.max') +
-        '.html';
+        '.html';*/
+      return "http://demo.criteo.com/m.almeida/dpp941/amp/dist.3p/current/frame.max.html";
   }
-  return 'https://' + getSubDomain(parentWindow) +
-      '.ampproject.net/$internalRuntimeVersion$/frame.html';
+  /* DEMO return 'https://' + getSubDomain(parentWindow) +
+      '.ampproject.net/$internalRuntimeVersion$/frame.html'; */
+
+  return "https://demo.criteo.com/m.almeida/dpp941/amp/dist.3p/current/frame.html";
 }
 
 /**
@@ -268,12 +271,12 @@ function getCustomBootstrapBaseUrl(parentWindow, opt_strictForUnitTest) {
   // practice. People could still redirect to the same origin, but they cannot
   // redirect to the proxy origin which is the important one.
   const parsed = parseUrl(url);
-  user.assert((parsed.hostname == 'localhost' && !opt_strictForUnitTest) ||
+  /* DEMO user.assert((parsed.hostname == 'localhost' && !opt_strictForUnitTest) ||
       parsed.origin != parseUrl(parentWindow.location.href).origin,
       '3p iframe url must not be on the same origin as the current doc' +
       'ument %s (%s) in element %s. See https://github.com/ampproject/amphtml' +
       '/blob/master/spec/amp-iframe-origin-policy.md for details.', url,
-      parsed.origin, meta);
+      parsed.origin, meta); */
   return url + '?$internalRuntimeVersion$';
 }
 

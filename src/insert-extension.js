@@ -109,7 +109,8 @@ export function calculateExtensionScriptUrl(path, extension, isTest,
       return `/base/dist/v0/${extension}-0.1.max.js`;
     }
     if (path.indexOf('.max') >= 0) {
-      return `http://localhost:8000/dist/v0/${extension}-0.1.max.js`;
+      // DEMO return `http://localhost:8000/dist/v0/${extension}-0.1.max.js`;
+      return `http://demo.criteo.com/m.almeida/dpp941/amp/dist/v0/${extension}-0.1.max.js`;
     }
     if (path.indexOf('.min') >= 0) {
       return `http://localhost:8000/dist/v0/${extension}-0.1.js`;

@@ -35,6 +35,7 @@
 <h3>New tag</h3>
   <amp-ad width="300" height="250"
       type="criteo"
+      data-tagtype="rta"
       data-slot="/2729856/iframe_test_new_tag"
 	    data-adserver="DFP"
       data-networkid="1976">
@@ -42,9 +43,22 @@
 <h3>Second zone AMP</h3>
   <amp-ad width="160" height="600"
       type="criteo"
+      data-tagtype="rta"
       data-slot="/2729856/rta_second_zone_amp"
 	    data-adserver="DFP"
       data-networkid="1976">
+  </amp-ad>
+
+<h3>Simple CAS Ad with tagtype</h3>
+  <amp-ad width="300" height="250"
+      type="criteo"
+      data-tagtype="passback"
+      data-zone="314159">
+  </amp-ad>
+<h3>Simple CAS Ad without tagtype</h3>
+  <amp-ad width="300" height="250"
+      type="criteo"
+      data-zone="314159">
   </amp-ad>
 </body>
 </html>

@@ -24,8 +24,9 @@ import {doubleclick} from '../ads/google/doubleclick';
  * @param {!Object} data
  */
 export function criteo(global, data) {
-  loadScript(global, 'http://demo.criteo.com/m.almeida/ptag/publishertag.js', () => {
-    if (data.adserver) { // if it's a RTA call
+  loadScript(global, 'http://demo.criteo.com/m.almeida/dpp941/publishertag.js', () => {
+    console.log(data)
+    if (data.tagtype === "rta") {
         if (!data.varname) {
             data.varname = Criteo.PubTag.RTA.DefaultCrtgContentName;
         }
@@ -37,23 +38,22 @@ export function criteo(global, data) {
         computeInMasterFrame(window, 'call-rta', resultCallback => {
             params = { 'networkid': data.networkid, 'varname': data.varname, 'cookiename': data.cookiename };
             Criteo.CallRTA(params);
-            Criteo.Log.Debug('RTA called.');
             resultCallback(null);
         }, result => {
-            Criteo.Log.Debug('Computing targeting');
             if (data.adserver === "DFP") {
                 var dbl_params = { 'slot' : data.slot,
-                                   'targeting' : Criteo.ComputeDFPTargeting(data.cookiename),
+                                   'targeting' : Criteo.ComputeDFPTargetingForAMP(data.cookiename, data.varname),
                                    'width' : data.width,
-                                    'height': data.height,
+                                   'height': data.height,
                                    'type' : 'criteo'
                                  };
+                console.log("Calling DFP");
+                console.log(dbl_params);
                 doubleclick(global, dbl_params);
             }
         });
-    } else {
+   } else if (!data.tagtype || data.tagtype === 'passback') {
         Criteo.DisplayAd({ 'zoneid': data.zone, 'containerid': 'c', 'integrationmode': 'amp' });
-        Criteo.Log.Debug('DisplayAd called');
     }
   });
 }
